@@ -2,6 +2,9 @@
 results/
 figures/
 
+# test data
+data/test_data/
+
 # dotenv file
 .env
 
