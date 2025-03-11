@@ -9,9 +9,8 @@ from nilearn.glm.first_level import (
 )
 from nilearn.image import load_img
 
-from network_glm.config import regressor_config
+from network_glm.config import regressor_config, contrasts_config
 from network_glm.quality_control import get_all_contrast_vif
-
 
 def calculate_mean_rt(files: dict):
     mean_rts = []
@@ -27,8 +26,7 @@ def calculate_mean_rt(files: dict):
     return np.mean(mean_rts)
 
 def get_nscans(datafile: Path):
-    img = load_img(datafile)
-    return img.shape[3]
+    return load_img(datafile).shape[3]
 
 def get_files(subj_dir: Path, task_name: str, expected_file_count: int = 4):
     # The reason expected_file_count is 4 is because
@@ -37,7 +35,6 @@ def get_files(subj_dir: Path, task_name: str, expected_file_count: int = 4):
     # - optcom_bold.nii.gz
     # - confounds_timeseries.tsv
     # - brain_mask.nii.gz
-
     files = {}
 
     for file in sorted(
@@ -304,12 +301,14 @@ def main():
         # percent_junk = np.mean(events_df["junk_trials"])
 
         # Add column containing all 1s
-        # - sanity check
         events_df["constant_1_column"] = 1
+        
+        # Add response_time_centered column for RT regressor
+        events_df["response_time_centered"] = events_df.response_time - mean_rt
 
         # Add break period if needed
         if model_break:
-            regressor_config["break_period"] = {
+            regressor_config[task_name]["break_period"] = {
                 "amplitude_column": "constant_1_column",
                 "duration_column": "duration",
                 "subset": 'trial_id == "break_with_performance_feedback"',
@@ -333,37 +332,8 @@ def main():
             index=False
         )
 
-        # CUEDTS-specific contrasts
-        contrasts = {
-            "task_switch_cost": "task_switch_cue_switch-task_stay_cue_switch",
-            "cue_switch_cost": "task_stay_cue_switch-task_stay_cue_stay",
-            "task_switch_cue_switch-task_stay_cue_stay": (
-                "task_switch_cue_switch-task_stay_cue_stay"
-            ),
-            "task-baseline": (
-                "1/3*(task_stay_cue_switch+task_stay_cue_stay+"
-                "task_switch_cue_switch)"
-            ),
-        }
-
-        # Get response time centered
-        events_df["response_time_centered"] = events_df.response_time - mean_rt
-        rt, rt_3col = make_regressor_and_derivative(
-            n_scans=nscans,
-            tr=tr,
-            events_df=events_df,
-            add_deriv=False,
-            amplitude_column="response_time_centered",
-            duration_column="constant_1_column",
-            subset=(
-                "key_press == correct_response and response_time >= 0.2 and "
-                "trial_type != 'tn/a_cn/a' and trial_id == 'test_trial'"
-            ),
-            demean_amp=False,
-            cond_id="response_time",
-        )
-        design_matrix = pd.concat([design_matrix, rt], axis=1)
-        contrasts["response_time"] = "response_time"
+        # Get contrasts from config for task
+        contrasts = contrasts_config[task_name]
         design_matrix['constant'] = 1
 
         # Fit GLM to the data
