@@ -1,0 +1,50 @@
+[project]
+name = "network_glm"
+version = "0.1.0"
+description = "GLM analysis for fMRI data in network dataset."
+readme = "README.md"
+authors = [
+    { name = "Logan Bennett", email = "logben@stanford.edu" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.2.3",
+    "pandas>=2.2.3",
+    "matplotlib>=3.10.0",
+    "nilearn>=0.11.1",
+    "seaborn>=0.13.2",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "ipython>=8.32.0",
+    "python-dotenv>=1.0.1",
+    "pytest>=8.3.4",
+]
+
+[project.scripts]
+glm = "network_glm.glm:main"
+create_carpet_plots = "network_glm.create_carpet_plots:main"
+create_brain_maps = "network_glm.create_brain_maps:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+extend-select = ["E501", "W", "N", "R", "I"]
+
+[tool.pytest.ini_options]
+testpaths=['tests']
+
+[tool.pyright]
+exclude = ['.venv']
+venvPath = '.'
+venv = '.venv'
