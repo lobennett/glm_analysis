@@ -3,7 +3,7 @@ results/
 figures/
 
 # test data
-data/test_data/
+data/test_data/sub-*
 
 # dotenv file
 .env
