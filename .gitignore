@@ -8,9 +8,6 @@ figures/
 # archived code
 archive
 
-# test datasets
-data/
-
 # nilearn cache
 nilearn_cache/
 
