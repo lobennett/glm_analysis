@@ -13,6 +13,7 @@ dependencies = [
     "matplotlib>=3.10.0",
     "nilearn>=0.11.1",
     "seaborn>=0.13.2",
+    "gdown>=5.2.0",
 ]
 
 [dependency-groups]
