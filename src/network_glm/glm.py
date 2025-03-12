@@ -9,8 +9,9 @@ from nilearn.glm.first_level import (
 )
 from nilearn.image import load_img
 
-from network_glm.config import regressor_config, contrasts_config
+from network_glm.config import contrasts_config, regressor_config
 from network_glm.quality_control import get_all_contrast_vif
+
 
 def calculate_mean_rt(files: dict):
     mean_rts = []
@@ -302,7 +303,7 @@ def main():
 
         # Add column containing all 1s
         events_df["constant_1_column"] = 1
-        
+
         # Add response_time_centered column for RT regressor
         events_df["response_time_centered"] = events_df.response_time - mean_rt
 
