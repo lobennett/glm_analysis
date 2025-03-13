@@ -1,0 +1,17 @@
+# virtual environment
+.venv/
+
+# log files
+log/
+
+# pycache
+__pycache__/
+
+# ruff cache 
+.ruff_cache/
+
+# new_events
+new_events/
+
+# archived code
+archive/
