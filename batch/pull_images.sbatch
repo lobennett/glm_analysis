@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #SBATCH -J pull_images
-#SBATCH --time=01:00:00
+#SBATCH --time=00:30:00
 #SBATCH -n 1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem-per-cpu=4G
@@ -27,7 +27,7 @@ Notes:
 '
 
 # Prepare computing environment
-source ./setup_env.sh
+source ./batch/setup_env.sh
 
 # Pull images
 apptainer pull ${FMRIPREP_VERSION} docker://nipreps/fmriprep:latest

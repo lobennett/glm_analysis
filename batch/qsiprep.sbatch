@@ -24,7 +24,7 @@ Notes:
 '
 
 # Prepare computing environment
-source ./setup_env.sh
+source ./batch/setup_env.sh
 
 # Prepare apptainer/singularity command line
 APPTAINER_CMD="apptainer run --cleanenv -B $BIDS_DIR:/data -B $WORK_DIR:/work $APPTAINER_IMAGE"

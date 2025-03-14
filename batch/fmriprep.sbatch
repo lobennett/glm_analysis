@@ -28,7 +28,7 @@ Notes:
 '
 
 # Prepare computing environment
-source ./setup_env.sh
+source ./batch/setup_env.sh
 
 # Prepare some writeable bind-mount points.
 mkdir -p $FMRIPREP_DERIVS_DIR
