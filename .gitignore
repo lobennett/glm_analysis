@@ -5,8 +5,8 @@ figures/
 # test data
 data/test_data/sub-*
 data/fMRI_data/
+data/glm_data/
 data/tedana*
-data/glm
 
 # dotenv file
 .env
