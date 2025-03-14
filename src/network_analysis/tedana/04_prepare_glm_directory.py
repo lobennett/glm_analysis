@@ -6,7 +6,7 @@ import numpy as np
 import os
 
 def preprocess_events(df):
-    df['trial_type'].fillna('na', inplace=True)
+    df.fillna({'trial_type': 'na'}, inplace=True)
     df['onset'] = df['onset'] - 7 * 1.49 
     neg_rt = df['response_time'] < 0
     df['junk'] = np.where(neg_rt, 1, 0)
@@ -21,7 +21,7 @@ def main():
 
     # Directories from which we will move data
     subj_bids_dir = Path(bids_dir, f'sub-{subj_id}')
-    subj_fmriprep_dir = Path(subj_bids_dir, "derivatives/fmriprep")
+    subj_fmriprep_dir = Path(bids_dir, f'derivatives/fmriprep/sub-{subj_id}')
     subj_tedana_dir = Path("./data/tedana_transformed", f'sub-{subj_id}')
 
     # Directories to which we will move data
@@ -29,10 +29,10 @@ def main():
     glm_dir.mkdir(parents=True, exist_ok=True)
 
     # Copy over all masks and confounds files 
-    t1w_masks = sorted(glob(subj_fmriprep_dir / "ses-*" / "func" / f"*T1w*brain_mask.nii.gz"))
-    mni_masks = sorted(glob(subj_fmriprep_dir / "ses-*" / "func" / f"*MNI*brain_mask.nii.gz"))
-    confounds = sorted(glob(subj_fmriprep_dir / "ses-*" / "func" / f"*confounds*.tsv"))
-    events = sorted(glob(subj_bids_dir / "ses-*" / "func" / f"*events.tsv"))
+    t1w_masks = sorted(subj_fmriprep_dir.glob("ses-*/func/*T1w*brain_mask.nii.gz"))
+    mni_masks = sorted(subj_fmriprep_dir.glob("ses-*/func/*MNI*brain_mask.nii.gz"))
+    confounds = sorted(subj_fmriprep_dir.glob("ses-*/func/*confounds*.tsv"))
+    events = sorted(subj_bids_dir.glob("ses-*/func/*events.tsv"))
 
     # Move all the above files to the glm_dir
     for file in t1w_masks + mni_masks + confounds:
@@ -52,8 +52,7 @@ def main():
         df.to_csv(dest_path, sep='\t', index=False)
 
     # Copy over all bold files 
-    bold_files = sorted(glob(subj_tedana_dir / "ses-*" / "func" / f"*desc-optcom_bold.nii.gz"))
-
+    bold_files = sorted(subj_tedana_dir.glob("ses-*/func/*desc-optcom_bold.nii.gz"))
     # Copy over all bold files 
     for file in bold_files:
         rel_path = os.path.relpath(file, start=subj_tedana_dir)
