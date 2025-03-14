@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from network_glm.quality_control import est_contrast_vifs
-
+from network_analysis.glm.quality_control import est_contrast_vifs
 
 def test_est_contrast_vifs():
     # TODO: Improve test cases.

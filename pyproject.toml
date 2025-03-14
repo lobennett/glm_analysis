@@ -1,7 +1,7 @@
 [project]
-name = "network_glm"
+name = "network_analysis"
 version = "0.1.0"
-description = "GLM analysis for fMRI data in network dataset."
+description = "Analysis of fMRI data in network dataset."
 readme = "README.md"
 authors = [
     { name = "Logan Bennett", email = "logben@stanford.edu" }
@@ -14,6 +14,7 @@ dependencies = [
     "nilearn>=0.11.1",
     "seaborn>=0.13.2",
     "gdown>=5.2.0",
+    "tedana>=23.0.2",
 ]
 
 [dependency-groups]
@@ -25,9 +26,9 @@ dev = [
 ]
 
 [project.scripts]
-glm = "network_glm.glm:main"
-create_carpet_plots = "network_glm.create_carpet_plots:main"
-create_brain_maps = "network_glm.create_brain_maps:main"
+glm = "network_analysis.glm.glm:main"
+create_carpet_plots = "network_analysis.glm.create_carpet_plots:main"
+create_brain_maps = "network_analysis.glm.create_brain_maps:main"
 
 [build-system]
 requires = ["hatchling"]

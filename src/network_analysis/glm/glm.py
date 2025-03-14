@@ -9,9 +9,8 @@ from nilearn.glm.first_level import (
 )
 from nilearn.image import load_img
 
-from network_glm.config import contrasts_config, regressor_config
-from network_glm.quality_control import get_all_contrast_vif
-
+from network_analysis.glm.config import contrasts_config, regressor_config
+from network_analysis.glm.quality_control import get_all_contrast_vif
 
 def calculate_mean_rt(files: dict):
     mean_rts = []
