@@ -35,6 +35,9 @@ __pycache__/
 # std out/err logs for sherlock
 log/
 
+# apptainer images 
+apptainer_images/*.sif
+
 # OS generated files 
 .DS_Store
 .DS_Store?
