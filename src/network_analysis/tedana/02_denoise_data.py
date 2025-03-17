@@ -76,6 +76,11 @@ def main():
         
         outbase = f"sub-{subj_id}_{ses}_{task_name}_{run_number}_rec-tedana"
         outpath = outdir / outbase
+        outfile = outpath / "desc-optcom_bold.nii.gz"
+        
+        if os.path.isfile(outfile):
+            logging.warning(f"Skipping: {outfile} exists...")
+            continue
 
         datafiles = [str(f) for f in files]
         logging.info(f"Running tedana on {outbase}")
@@ -86,7 +91,7 @@ def main():
             tedpca="kundu",
         )
 
-        # break
+    return 
 
 if __name__ == "__main__":
     main()

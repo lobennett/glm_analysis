@@ -17,7 +17,6 @@ def preprocess_events(df):
 def main():
     bids_dir = Path("./data/fMRI_data/")
     subj_id = "s1273"
-    task_name = "cuedTS"
 
     # Directories from which we will move data
     subj_bids_dir = Path(bids_dir, f'sub-{subj_id}')
@@ -53,7 +52,6 @@ def main():
 
     # Copy over all bold files 
     bold_files = sorted(subj_tedana_dir.glob("ses-*/func/*desc-optcom_bold.nii.gz"))
-    # Copy over all bold files 
     for file in bold_files:
         rel_path = os.path.relpath(file, start=subj_tedana_dir)
         dest_path = glm_dir / rel_path

@@ -74,8 +74,8 @@ def main():
         n_dummy_trs = amount_to_trim[basename]
         outfile = outdir / outname
         
-        if os.path.exists(outfile):
-            logging.info(f"Skipping {f} because it already exists")
+        if os.path.isfile(outfile):
+            logging.warning(f"Skipping: {f} already exists...")
             continue
 
         # logging.info(f"Removing {n_dummy_trs} TRs from {f}")

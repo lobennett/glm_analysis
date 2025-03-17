@@ -10,7 +10,6 @@ from nipype.interfaces.ants import ApplyTransforms
 
 def get_sub_ses_task(f):
     components = f.split('_')
-
     # Extract each component
     for component in components:
         if component.startswith('ses-'):
@@ -61,6 +60,10 @@ def main() -> None:
 
         # full outpath
         outpath = outdir_full / f"sub-{subj_id}_{ses}_{task_name}_{run_number}_space-T1w_desc-optcom_bold.nii.gz"
+
+        if os.path.isfile(outpath):
+            logging.warning(f"Skipping: {outpath} exists...")
+            continue
 
         apply_xforms(
             scan=str(f),
