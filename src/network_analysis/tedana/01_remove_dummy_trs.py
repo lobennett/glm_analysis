@@ -1,9 +1,11 @@
-from pathlib import Path
-from glob import glob
-import pandas as pd
-import os 
-import nibabel as nb
 import logging
+import os
+from glob import glob
+from pathlib import Path
+
+import nibabel as nb
+import pandas as pd
+
 
 def check_dummy_trs(confounds_file):
     df = pd.read_csv(confounds_file, sep="\t")
@@ -32,8 +34,8 @@ def main():
 
     subj_bids_dir = Path(bids_dir, f'sub-{subj_id}')
     subj_fmriprep_dir = Path(bids_dir, "derivatives/fmriprep", f'sub-{subj_id}')
-    
-    # Get all confounds files 
+
+    # Get all confounds files
     confounds_pattern = Path(subj_fmriprep_dir, "ses-*","func", f'sub-{subj_id}*timeseries.tsv')
     confounds_files = glob(str(confounds_pattern))
 
@@ -53,10 +55,10 @@ def main():
         n_dummy_trs = amount_to_trim[basename]
         # - Right now, we are just trimming 7 TRs
         # - in the network code, this didn't actually throw an error
-        # - but instead just logged things to console. 
+        # - but instead just logged things to console.
         # if trim_will_cut_into_onset(file, n_dummy_trs):
         #     raise ValueError(f"Removing {n_dummy_trs} TRs will cut into event onset in {file}")
-        
+
     # Get all bold files
     bold_pattern = Path(subj_fmriprep_dir, "ses-*", "func", f'sub-{subj_id}*echo-*desc-preproc_bold.nii.gz')
     bold_files = glob(str(bold_pattern))
@@ -64,7 +66,7 @@ def main():
     # Create a local output directory
     outdir = Path("./data/tedana_dummy_removed") / f"sub-{subj_id}"
     os.makedirs(outdir, exist_ok=True)
-    
+
     for f in bold_files:
         outname = Path(f).name.replace("_desc-preproc_bold.nii.gz", "_desc-preproc-dummyremoved_bold.nii.gz")
         basename = Path(f).name
@@ -73,7 +75,7 @@ def main():
 
         n_dummy_trs = amount_to_trim[basename]
         outfile = outdir / outname
-        
+
         if os.path.isfile(outfile):
             logging.warning(f"Skipping: {f} already exists...")
             continue
@@ -85,8 +87,8 @@ def main():
         # - Right now, just trim 7 TRs although
         # - I think this should be based on the number
         # - of unstable TRs in the confounds file
-        trimmed_img = trim_bold_file(f) 
-       
+        trimmed_img = trim_bold_file(f)
+
         # Save the file to the local output directory
         nb.save(trimmed_img, outfile)
         logging.info(f"Saved trimmed bold to {outfile}")

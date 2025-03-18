@@ -5,12 +5,14 @@
 #     "tedana",
 # ]
 # ///
+import json
+import logging
+import os
 from glob import glob
 from pathlib import Path
-import json
-import os
+
 from tedana.workflows import tedana_workflow
-import logging
+
 
 def get_echo_metadata(files):
     echo_dict = {}
@@ -59,25 +61,25 @@ def main():
     subj_tedana_dir = Path(f"./data/tedana_dummy_removed/sub-{subj_id}")
     outdir = Path("./data/tedana_denoised") / f"sub-{subj_id}"
     outdir.mkdir(parents=True, exist_ok=True)
-    
+
     # Group files by session, task, and run
     file_groups = group_files(subj_tedana_dir.glob("*bold.nii.gz"))
-    
+
     # Process each group
     for (ses, task_name, run_number), files in file_groups.items():
         if len(files) != 3:
             raise ValueError(f"Expected 3 echo files, found {len(files)} for {ses} {task_name} {run_number}")
-            
+
         print(f"Processing {ses} {task_name} {run_number} with {len(files)} echo files")
 
         json_file_pattern = subj_bids_dir / ses / "func" / f"*{subj_id}*{ses}*{task_name}*{run_number}*.json"
         json_files = glob(str(json_file_pattern))
         echo_values = get_echo_metadata(json_files)
-        
+
         outbase = f"sub-{subj_id}_{ses}_{task_name}_{run_number}_rec-tedana"
         outpath = outdir / outbase
         outfile = outpath / "desc-optcom_bold.nii.gz"
-        
+
         if os.path.isfile(outfile):
             logging.warning(f"Skipping: {outfile} exists...")
             continue
@@ -91,7 +93,7 @@ def main():
             tedpca="kundu",
         )
 
-    return 
+    return
 
 if __name__ == "__main__":
     main()
