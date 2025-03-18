@@ -12,6 +12,7 @@ from nilearn.image import load_img
 from network_analysis.glm.config import contrasts_config, regressor_config
 from network_analysis.glm.quality_control import get_all_contrast_vif
 
+
 def calculate_mean_rt(files: dict):
     mean_rts = []
     for session in files:
@@ -38,10 +39,10 @@ def get_files(subj_dir: Path, task_name: str, expected_file_count: int = 4):
     files = {}
 
     for file in sorted(
-        subj_dir.glob(f"ses-*/*{task_name}*"),
+        subj_dir.glob(f"ses-*/func/*{task_name}*"),
         key=lambda x: x.parts[-2]
     ):
-        session_name = file.parts[-2]
+        session_name = file.parts[-3]
 
         if session_name not in files:
             files[session_name] = {}
@@ -57,7 +58,9 @@ def get_files(subj_dir: Path, task_name: str, expected_file_count: int = 4):
             files[session_name]["brain_mask"] = file
 
     for key in files:
-        assert len(files[key]) == expected_file_count
+        assert len(files[key]) == expected_file_count, (
+            f"{key} has count {len(files[key])} not {expected_file_count}"
+        )
 
     return files
 
@@ -250,10 +253,11 @@ def main():
     # - The data is organized by subject and session
     # - The necessary files include the optcom bold files,
     # - the event files, the brain masks, and the confounds files
-    bids_dir = Path("./data/test_data/")
+    glm_dir = Path("./data/glm_data/")
     subj_id = "s1273"
     task_name = "cuedTS"
-    subj_dir = Path(bids_dir, f'sub-{subj_id}')
+    subj_dir = Path(glm_dir, f'sub-{subj_id}')
+    print(f"Launching first-level models for {subj_dir}")
 
     # Get files for the subject and task
     files = get_files(subj_dir, task_name)
@@ -265,6 +269,7 @@ def main():
     model_break = True
 
     print("Mean RT: ", mean_rt)
+    print("The following files will be used for the first-level model: ", files)
 
     for session in files:
         print(f'Processing session {session}')
