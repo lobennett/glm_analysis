@@ -4,9 +4,12 @@
 #     "nipype",
 # ]
 # ///
-from pathlib import Path
+import logging
 import os
+from pathlib import Path
+
 from nipype.interfaces.ants import ApplyTransforms
+
 
 def get_sub_ses_task(f):
     components = f.split('_')
@@ -65,14 +68,14 @@ def main() -> None:
             logging.warning(f"Skipping: {outpath} exists...")
             continue
 
+        print(f'Applying transforms for {outpath}')
         apply_xforms(
             scan=str(f),
             xforms=str(bold_to_t1_xforms[0]),
             outpath=str(outpath),
             reference=str(bold_to_t1_space[0]),
         )
-
-        # return
+        print(f'Finished applying transforms for {outpath}')
 
 if __name__ == "__main__":
     main()
