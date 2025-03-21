@@ -49,6 +49,9 @@ echo Commandline: $cmd
 eval $cmd
 exitcode=$?
 
+# Write to JSON file 
+echo "{\"subject\": \"$subject\", \"exitcode\": $exitcode, \"command\": \"$cmd\", \"date_ran\": \"$(date +'%m_%d_%Y')\"}" >> ./log/fmriprep_results/${subject}_fmriprep_results.json
+
 # Output results to a table
 echo Finished tasks ${SLURM_ARRAY_TASK_ID} with exit code $exitcode
 exit $exitcode

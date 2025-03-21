@@ -29,11 +29,14 @@ Notes:
 
 # Get script paths relative to project root
 script_files=(
-    "src/network_analysis/tedana/01_remove_dummy_trs.py"
-    "src/network_analysis/tedana/02_denoise_data.py"
+    # "src/network_analysis/tedana/01_remove_dummy_trs.py"
+    # "src/network_analysis/tedana/02_denoise_data.py"
     "src/network_analysis/tedana/03_tedana_transform.py"
     "src/network_analysis/tedana/04_prepare_glm_directory.py"
 )
+
+# Load modules for tedana transform
+ml biology ants
 
 # Get full path to uv executable
 uv_exec=$(which uv)

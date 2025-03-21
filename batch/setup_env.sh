@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Base paths 
-export BIDS_DIR="./data/fMRI_data"
+export BIDS_DIR="./data/validation_BIDS"
 export APPTAINER_DIR="./apptainer_images"
 
 # fMRIPrep version
@@ -19,18 +19,19 @@ export QSIPREP_VERSION="latest"
 export QSIPREP_VERSION="${APPTAINER_DIR}/qsiprep_${QSIPREP_VERSION}_${TIMESTAMP}.sif"
 
 # - FMRIPrep
-export FMRIPREP_DERIVS_DIR="${BIDS_DIR}/derivatives/fmriprep-${TAG}"
+export FMRIPREP_DERIVS_DIR="${BIDS_DIR}/derivatives/fmriprep_${TAG}"
 export FMRIPREP_WORK_DIR="./work/fmriprep_${TAG}"
 # - MRIQC
-export MRIQC_DERIVS_DIR="${BIDS_DIR}/derivatives/mriqc-${TAG}"
+export MRIQC_DERIVS_DIR="${BIDS_DIR}/derivatives/mriqc_${TAG}"
 export MRIQC_WORK_DIR="./work/mriqc_${TAG}"
 # - QSIPrep
-export QSIPREP_DERIVS_DIR="${BIDS_DIR}/derivatives/qsiprep-${TAG}"
+export QSIPREP_DERIVS_DIR="${BIDS_DIR}/derivatives/qsiprep_${TAG}"
 export QSIPREP_WORK_DIR="./work/qsiprep_${TAG}"
 
 # Batch input
 ## Only running on completed subjects
 export SUBJECTS_FILE="./subs.txt"
+export ALL_SUBJECTS_FILE="./all_subs.txt"
 
 # FreeSurfer license
 # - NOTE: Change this to the path to your FreeSurfer license file

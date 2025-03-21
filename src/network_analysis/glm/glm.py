@@ -253,7 +253,7 @@ def main():
     # - The data is organized by subject and session
     # - The necessary files include the optcom bold files,
     # - the event files, the brain masks, and the confounds files
-    glm_dir = Path("./data/glm_data/")
+    glm_dir = Path("/oak/stanford/groups/russpold/data/network_grant/validation_BIDS/derivatives/glm_data/")
     subj_id = "s1273"
     task_name = "cuedTS"
     subj_dir = Path(glm_dir, f'sub-{subj_id}')
@@ -280,6 +280,11 @@ def main():
         data = files[session]["data"]
         confounds = files[session]["confounds"]
         brain_mask = files[session]["brain_mask"]
+
+        print(events)
+        print(data)
+        print(confounds)
+        print(brain_mask)
 
         # Get the number of timepoints in the current session
         # - this is used to create the regressors
