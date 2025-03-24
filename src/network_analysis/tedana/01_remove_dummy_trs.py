@@ -6,6 +6,7 @@ from pathlib import Path
 import nibabel as nb
 import pandas as pd
 
+from network_analysis.utils import get_path_config, get_parser, get_subj_id
 
 def check_dummy_trs(confounds_file):
     df = pd.read_csv(confounds_file, sep="\t")
@@ -27,16 +28,22 @@ def trim_bold_file(bold_file, n_dummy_trs = 7):
     return img.slicer[:, :, :, n_dummy_trs:]
 
 def main():
-    bids_dir = Path("./data/fMRI_data/")
-    subj_id = "s1273"
-
     logging.basicConfig(level=logging.INFO)
+    
+    # Get the path config
+    bids_dir, fmriprep_dir, tedana_dummy_removed_dir, _, _, _ = get_path_config()
 
-    subj_bids_dir = Path(bids_dir, f'sub-{subj_id}')
-    subj_fmriprep_dir = Path(bids_dir, "derivatives/fmriprep", f'sub-{subj_id}')
+    # Parse the command line arguments
+    # - Get the subject ID from the command line arguments
+    parser = get_parser()
+    subj_id = get_subj_id(parser)
+
+    # Get the subject's bids and fmriprep directories
+    subj_bids_dir = Path(bids_dir / subj_id)
+    subj_fmriprep_dir = Path(fmriprep_dir / subj_id)
 
     # Get all confounds files
-    confounds_pattern = Path(subj_fmriprep_dir, "ses-*","func", f'sub-{subj_id}*timeseries.tsv')
+    confounds_pattern = Path(subj_fmriprep_dir, "ses-*", "func", f'{subj_id}*timeseries.tsv')
     confounds_files = glob(str(confounds_pattern))
 
     amount_to_trim = {}
@@ -46,7 +53,7 @@ def main():
         amount_to_trim[basename] = n_dummy_trs
 
     # Get all event files
-    events_pattern = Path(subj_bids_dir, "ses-*", "func", f'sub-{subj_id}*events.tsv')
+    events_pattern = Path(subj_bids_dir, "ses-*", "func", f'{subj_id}*events.tsv')
     events_files = glob(str(events_pattern))
 
     for file in events_files:
@@ -60,18 +67,17 @@ def main():
         #     raise ValueError(f"Removing {n_dummy_trs} TRs will cut into event onset in {file}")
 
     # Get all bold files
-    bold_pattern = Path(subj_fmriprep_dir, "ses-*", "func", f'sub-{subj_id}*echo-*desc-preproc_bold.nii.gz')
+    bold_pattern = Path(subj_fmriprep_dir, "ses-*", "func", f'{subj_id}*echo-*desc-preproc_bold.nii.gz')
     bold_files = glob(str(bold_pattern))
 
     # Create a local output directory
-    outdir = Path("./data/tedana_dummy_removed") / f"sub-{subj_id}"
+    outdir = Path(tedana_dummy_removed_dir) / subj_id
     os.makedirs(outdir, exist_ok=True)
 
     for f in bold_files:
         outname = Path(f).name.replace("_desc-preproc_bold.nii.gz", "_desc-preproc-dummyremoved_bold.nii.gz")
         basename = Path(f).name
         basename = basename.replace("_desc-preproc_bold.nii.gz", "").split('_echo')[0]
-        logging.info(f"Removing {basename} TRs from {f}")
 
         n_dummy_trs = amount_to_trim[basename]
         outfile = outdir / outname

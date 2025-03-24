@@ -1,10 +1,3 @@
-# /// script
-# requires-python = ">=3.12"
-# dependencies = [
-#     "setuptools",
-#     "tedana",
-# ]
-# ///
 import json
 import logging
 import os
@@ -13,6 +6,7 @@ from pathlib import Path
 
 from tedana.workflows import tedana_workflow
 
+from network_analysis.utils import get_path_config, get_parser, get_subj_id
 
 def get_echo_metadata(files):
     echo_dict = {}
@@ -53,18 +47,24 @@ def group_files(files):
 
 
 def main():
-    bids_dir = Path("./data/fMRI_data/")
-    subj_id = "s1273"
+    bids_dir, fmriprep_dir, tedana_dummy_removed_dir, tedana_denoised_dir, _, _ = get_path_config()
+
+    # Parse the command line arguments
+    parser = get_parser()
+    subj_id = get_subj_id(parser)
+
     logging.basicConfig(level=logging.INFO)
 
-    subj_bids_dir = Path(f"{bids_dir}/sub-{subj_id}")
-    subj_tedana_dir = Path(f"./data/tedana_dummy_removed/sub-{subj_id}")
-    outdir = Path("./data/tedana_denoised") / f"sub-{subj_id}"
+    subj_bids_dir = Path(bids_dir / subj_id)
+    subj_tedana_dir = Path(tedana_dummy_removed_dir / subj_id)
+
+    # Create the output directory for denoised data
+    outdir = Path(tedana_denoised_dir / subj_id)
     outdir.mkdir(parents=True, exist_ok=True)
 
     # Group files by session, task, and run
     file_groups = group_files(subj_tedana_dir.glob("*bold.nii.gz"))
-
+    
     # Process each group
     for (ses, task_name, run_number), files in file_groups.items():
         if len(files) != 3:
@@ -76,7 +76,7 @@ def main():
         json_files = glob(str(json_file_pattern))
         echo_values = get_echo_metadata(json_files)
 
-        outbase = f"sub-{subj_id}_{ses}_{task_name}_{run_number}_rec-tedana"
+        outbase = f"{subj_id}_{ses}_{task_name}_{run_number}_rec-tedana"
         outpath = outdir / outbase
         outfile = outpath / "desc-optcom_bold.nii.gz"
 

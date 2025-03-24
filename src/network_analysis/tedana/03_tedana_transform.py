@@ -1,18 +1,14 @@
-# /// script
-# requires-python = ">=3.12"
-# dependencies = [
-#     "nipype",
-# ]
-# ///
 import logging
 import os
 from pathlib import Path
 
 from nipype.interfaces.ants import ApplyTransforms
 
+from network_analysis.utils import get_path_config, get_parser, get_subj_id
 
 def get_sub_ses_task(f):
     components = f.split('_')
+    
     # Extract each component
     for component in components:
         if component.startswith('ses-'):
@@ -36,12 +32,17 @@ def apply_xforms(scan, outpath, xforms, reference):
     at.run()
 
 def main() -> None:
-    bids_dir = Path("./data/fMRI_data/")
-    subj_id = "s1273"
+    logging.basicConfig(level=logging.INFO)
 
-    subj_fmriprep_dir = Path(bids_dir, f"derivatives/fmriprep/sub-{subj_id}")
-    subj_tedana_dir = Path(f"./data/tedana_denoised/sub-{subj_id}")
-    outdir = Path(f"./data/tedana_transformed/sub-{subj_id}")
+    bids_dir, fmriprep_dir, tedana_dummy_removed_dir, tedana_denoised_dir, tedana_transformed_dir, _ = get_path_config()
+
+    # Parse the command line arguments
+    parser = get_parser()
+    subj_id = get_subj_id(parser)
+
+    subj_fmriprep_dir = Path(fmriprep_dir / subj_id)
+    subj_tedana_dir = Path(tedana_denoised_dir / subj_id)
+    outdir = Path(tedana_transformed_dir / subj_id)
     outdir.mkdir(parents=True, exist_ok=True)
 
     for f in subj_tedana_dir.glob('**/*optcom*.nii.gz'):
@@ -62,7 +63,7 @@ def main() -> None:
         outdir_full.mkdir(parents=True, exist_ok=True)
 
         # full outpath
-        outpath = outdir_full / f"sub-{subj_id}_{ses}_{task_name}_{run_number}_space-T1w_desc-optcom_bold.nii.gz"
+        outpath = outdir_full / f"{subj_id}_{ses}_{task_name}_{run_number}_space-T1w_desc-optcom_bold.nii.gz"
 
         if os.path.isfile(outpath):
             logging.warning(f"Skipping: {outpath} exists...")

@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from network_analysis.utils import get_path_config, get_parser, get_subj_id
 
 def preprocess_events(df):
     df.fillna({'trial_type': 'na'}, inplace=True)
@@ -21,16 +22,19 @@ def preprocess_confounds(df):
     return df.reset_index(drop=True)
 
 def main():
-    bids_dir = Path("./data/fMRI_data/")
-    subj_id = "s1273"
+    bids_dir, fmriprep_dir, tedana_dummy_removed_dir, tedana_denoised_dir, tedana_transformed_dir, glm_data_dir = get_path_config()
+
+    # Parse the command line arguments
+    parser = get_parser()
+    subj_id = get_subj_id(parser)
 
     # Directories from which we will move data
-    subj_bids_dir = Path(bids_dir, f'sub-{subj_id}')
-    subj_fmriprep_dir = Path(bids_dir, f'derivatives/fmriprep/sub-{subj_id}')
-    subj_tedana_dir = Path("./data/tedana_transformed", f'sub-{subj_id}')
+    subj_bids_dir = Path(bids_dir / subj_id)
+    subj_fmriprep_dir = Path(fmriprep_dir / subj_id)
+    subj_tedana_dir = Path(tedana_transformed_dir / subj_id)
 
     # Directories to which we will move data
-    glm_dir = Path("./data/glm_data", f'sub-{subj_id}')
+    glm_dir = Path(glm_data_dir / subj_id)
     glm_dir.mkdir(parents=True, exist_ok=True)
 
     # Copy over all masks and confounds files
