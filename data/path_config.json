@@ -1,0 +1,8 @@
+{
+    "bids_dir": "/oak/stanford/groups/russpold/data/network_grant/validation_BIDS",
+    "fmriprep_dir": "/oak/stanford/groups/russpold/data/network_grant/validation_BIDS/derivatives/fmriprep-24.1.0rc2",
+    "tedana_dummy_removed_dir": "/oak/stanford/groups/russpold/data/network_grant/validation_BIDS/derivatives/tedana_dummy_removed",
+    "tedana_denoised_dir": "/oak/stanford/groups/russpold/data/network_grant/validation_BIDS/derivatives/tedana_denoised",
+    "tedana_transformed_dir": "/oak/stanford/groups/russpold/data/network_grant/validation_BIDS/derivatives/tedana_transformed",
+    "glm_data_dir": "/oak/stanford/groups/russpold/data/network_grant/validation_BIDS/derivatives/glm_data"
+}
