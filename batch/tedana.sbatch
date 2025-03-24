@@ -3,7 +3,7 @@
 #SBATCH -J tedana
 #SBATCH --time=2-00:00:00
 #SBATCH -n 1
-#SBATCH --array 1 # TODO: Change this to the number of subjects
+#SBATCH --array 1-41
 #SBATCH --cpus-per-task=8
 #SBATCH --mem-per-cpu=8G
 #SBATCH -p russpold,hns,normal 
@@ -25,18 +25,25 @@ Usage: sbatch ./batch/tedana.sbatch
 
 Notes: 
 
+I am only running this on the first 41 subjects. This is because the first 
+41 subjects are those that completed all 12 scans, and have fmriprep derivatives. 
+The remaining subjects did not complete all 12 scans, and therefore do not have 
+fmriprep derivatives.
 '
 
 # Get script paths relative to project root
 script_files=(
-    # "src/network_analysis/tedana/01_remove_dummy_trs.py"
+    "src/network_analysis/tedana/01_remove_dummy_trs.py"
     # "src/network_analysis/tedana/02_denoise_data.py"
-    "src/network_analysis/tedana/03_tedana_transform.py"
-    "src/network_analysis/tedana/04_prepare_glm_directory.py"
+    # "src/network_analysis/tedana/03_tedana_transform.py"
+    # "src/network_analysis/tedana/04_prepare_glm_directory.py"
 )
 
-# Load modules for tedana transform
-ml biology ants
+# Get the subject ID from the command line arguments
+subject=$( sed "${SLURM_ARRAY_TASK_ID}q;d" ${SUBJECTS_FILE} )
+
+# # Load modules for tedana transform
+# ml biology ants
 
 # Get full path to uv executable
 uv_exec=$(which uv)
@@ -44,7 +51,7 @@ uv_exec=$(which uv)
 # Run each script using the uv executable
 for script in "${script_files[@]}"; do
     echo "Running script: $script"
-    $uv_exec run "$script"
+    $uv_exec run "$script" --subj-id "$subject"
     echo "Completed script: $script"
 done
 
